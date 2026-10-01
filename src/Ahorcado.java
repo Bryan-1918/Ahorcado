@@ -2,9 +2,10 @@ import java.util.Scanner;
 import java.util.Random;
 
 public class Ahorcado {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception{
         Scanner sc = new Scanner(System.in);
-
+        
+        // Arreglo con palabras
         String[] palabraSecreta = {
             "computadora",
             "programacion",
@@ -49,55 +50,111 @@ public class Ahorcado {
             "fletero"
         };
 
-        Random randomWord = new Random();
+        boolean palabraAdivinada;
+        
+        String palabra;
 
-        int indexWord = randomWord.nextInt(palabraSecreta.length);
-
-        String palabra = palabraSecreta[indexWord];
-
+        int continuar;
+        
         int maxIntentos = 10;
-        int intentos = 0;
-        boolean palabraAdivinada = false;
+        
+        Random randomWord = new Random();
+        
+        System.out.println("-------Bienvenido al juego del ahorcado-------");
+        
+        do {
+            
+            // Elegir el index del arreglo para escoger una palabra
+            int indexWord = randomWord.nextInt(palabraSecreta.length);
+            
+            palabra = palabraSecreta[indexWord];
+            
+            int intentos = 0;
+            
+            // Guardar las letras ingresadas durante toda la partida
+            char[] letraIng = new char[27];
+            int letrasIngresadas = 0;
 
-        char[] letrasAdivinadas = new char[palabra.length()];
+            palabraAdivinada = false;
 
-        for(int i = 0; i < letrasAdivinadas.length; i++) {
-            letrasAdivinadas[i] = '_';
-        }
+            char[] letrasAdivinadas = new char[palabra.length()];
+            
+            for(int i = 0; i < letrasAdivinadas.length; i++) {
+                letrasAdivinadas[i] = '_';
+            }
+            
+            // Inicio del juego
+            while(!palabraAdivinada && intentos < maxIntentos) {
+                System.out.println("Palabra a adivinar: " + String.valueOf(letrasAdivinadas) + " (" + palabra.length() + " letras)");
+                System.out.print("Introduce una letra: ");
+                char letra = Character.toLowerCase(sc.next().charAt(0));
+                System.out.println();
 
-        while(!palabraAdivinada && intentos < maxIntentos) {
-            System.out.println("--------Bienvenido al ahorcado--------");
-            System.out.println("Palabra a adivinar: " + String.valueOf(letrasAdivinadas) + " (" + palabra.length() + " letras)");
-            System.out.print("Introduce una letra: ");
-            char letra = Character.toLowerCase(sc.next().charAt(0));
-            System.out.println();
+                // Verificar si ya se había ingresado la letra
+                boolean letraRepetida = false;
+                
+                for(int i = 0; i < letrasIngresadas; i++) {
+                    if(letraIng[i] == letra) {
+                        letraRepetida = true;
+                        break;
+                    }   
+                }
 
-            boolean letraCorrecta = false;
+                // Si está repetida se pide otra letra
+                if(letraRepetida) {
+                    System.out.println("Ya ingresaste la letra " + letra + ". Intenta con otra");
+                    continue;
+                }
+                
+                // Almacenarla en el array
+                letraIng[letrasIngresadas] = letra;
+                letrasIngresadas++;
 
-            for(int i = 0; i < palabra.length(); i++) {
-                if(palabra.charAt(i) == letra) {
-                    letrasAdivinadas[i] = letra;
-                    letraCorrecta = true;
+                boolean letraCorrecta = false;
+                
+                for(int i = 0; i < palabra.length(); i++) {
+                    if(palabra.charAt(i) == letra) {
+                        letrasAdivinadas[i] = letra;
+                        letraCorrecta = true;
+                    }
+                }
+                
+                if(!letraCorrecta) {
+                    intentos++;
+                    System.out.println("¡Incorrecto! Te quedan " + (maxIntentos - intentos) + " intentos");
+                }
+    
+                if(String.valueOf(letrasAdivinadas).equals(palabra)) {
+                    palabraAdivinada = true;
+                    System.out.println("¡Felicidades! Has adivinado la palabra secreta: " + palabra);
                 }
             }
 
-
-            if(!letraCorrecta) {
-                intentos++;
-                System.out.println("¡Incorrecto! Te quedan " + (maxIntentos - intentos) + " intentos");
+            if(!palabraAdivinada && ((maxIntentos - intentos) == 0)) {
+                System.out.println("Te quedaste sin intentos, la palabra era: " + palabra);
             }
 
-            if(String.valueOf(letrasAdivinadas).equals(palabra)) {
-                palabraAdivinada = true;
-                System.out.println("¡Felicidades, has adivinado la palabra secreta! " + palabra);
-            }
+            do {
+                System.out.println("¿Desea seguir jugando?");
+                System.out.println("1. Si");
+                System.out.println("2. No");
+                continuar = sc.nextInt();
 
-        }
+                switch(continuar) {
+                    case 1:
+                        System.out.println("----Comenzando una nueva partida----");
+                        break;
+                    case 2:
+                        System.out.println("----Ha salido del juego----");
+                        break;
+                    default:
+                        System.out.println("Opción inválida. Ingrese 1 o 2.");
+                }
 
-        if(!palabraAdivinada) {
-            System.out.println("Has perdido, la palabra era: " + palabra);
-        }
+            }while(continuar != 1 && continuar != 2);
 
+        }while(continuar == 1);
         sc.close();
+
     }
 }
